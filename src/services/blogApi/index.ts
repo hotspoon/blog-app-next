@@ -4,7 +4,6 @@ let fs: typeof import("fs").promises
 let path: typeof import("path")
 
 if (typeof window === "undefined") {
-  // We are on the server
   import("fs").then((fsModule) => {
     fs = fsModule.promises
   })
@@ -37,10 +36,6 @@ export const saveBlogPost = async (blogPost: IBlogPost) => {
 
 export const getBlogPosts = async (): Promise<IBlogPost[]> => {
   try {
-    // if (!fs) {
-    //   throw new Error("FS module is not loaded")
-    // }
-
     const data = await fs.readFile(getFilePath(), "utf-8")
     const blogPosts = JSON.parse(data)
 

@@ -13,7 +13,7 @@ interface SearchBlogListProps {
 const SearchBlogList: React.FC<SearchBlogListProps> = ({ initialPosts, initialPage }) => {
   const [posts, setPosts] = useState<IBlogPost[]>(initialPosts)
   const [searchQuery, setSearchQuery] = useState<string>("")
-  const debouncedSearchQuery = useDebounce(searchQuery, 500) // 500ms debounce delay
+  const debouncedSearchQuery = useDebounce(searchQuery, 500)
 
   useEffect(() => {
     const fetchPosts = async () => {

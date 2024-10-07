@@ -49,11 +49,12 @@ const StepSummaryCategory: React.FC<{
         aria-label="Blog Category"
       >
         <SelectTrigger className="w-full p-2 border rounded">
-          <SelectValue>{formData.category || "Select a category"}</SelectValue>
+          <SelectValue placeholder="Select a category">
+            {formData.category || "Select a category"}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Categories</SelectLabel>
             <SelectItem value="Tech">Tech</SelectItem>
             <SelectItem value="Lifestyle">Lifestyle</SelectItem>
             <SelectItem value="Business">Business</SelectItem>

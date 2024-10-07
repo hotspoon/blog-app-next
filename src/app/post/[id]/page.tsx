@@ -1,4 +1,3 @@
-// app/post/[id]/page.tsx
 import { notFound } from "next/navigation"
 import { BlogPost } from "@/components/blog/blog-post"
 import { getBlogPost } from "@/services/blogApi"
