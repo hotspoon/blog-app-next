@@ -1,0 +1,49 @@
+{
+  "posts": [
+    {
+      "id": "1",
+      "title": "Understanding React Hooks",
+      "author": "Jane Doe",
+      "date": "2024-10-01",
+      "category": "React",
+      "summary": "An introduction to React Hooks and how they can be used to manage state and side effects in functional components.",
+      "content": "React Hooks are functions that let you use state and other React features in functional components. They were introduced in React 16.8..."
+    },
+    {
+      "id": "2",
+      "title": "Getting Started with Docker",
+      "author": "John Smith",
+      "date": "2024-09-15",
+      "category": "DevOps",
+      "summary": "A beginner's guide to Docker, covering the basics of containers, images, and how to get started with Docker.",
+      "content": "Docker is a platform for developing, shipping, and running applications inside containers. Containers are lightweight, portable, and..."
+    },
+    {
+      "id": "3",
+      "title": "Building REST APIs with Flask",
+      "author": "Alice Johnson",
+      "date": "2024-08-20",
+      "category": "Flask",
+      "summary": "Learn how to build RESTful APIs using Flask, a lightweight web framework for Python.",
+      "content": "Flask is a micro web framework for Python that is easy to use and allows you to quickly build web applications and APIs. In this tutorial..."
+    },
+    {
+      "id": "4",
+      "title": "Mastering PostgreSQL",
+      "author": "Bob Brown",
+      "date": "2024-07-30",
+      "category": "Database",
+      "summary": "Advanced techniques for working with PostgreSQL, including performance tuning, indexing, and query optimization.",
+      "content": "PostgreSQL is a powerful, open-source relational database system. It has a strong reputation for reliability, feature robustness, and..."
+    },
+    {
+      "title": "",
+      "author": "",
+      "summary": "",
+      "category": "",
+      "content": "",
+      "id": "1728281510636",
+      "date": "2024-10-07T06:11:50.636Z"
+    }
+  ]
+}
