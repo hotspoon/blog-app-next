@@ -1,7 +1,9 @@
 import { promises as fs } from "fs"
 import path from "path"
 
-const filePath = path.join(process.cwd(), "src", "data", "blog.json")
+const dirRelativeToProjectRoot = "src/data"
+const dir = path.resolve("./", dirRelativeToProjectRoot)
+const filePath = path.join(dir, "blog.json")
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {

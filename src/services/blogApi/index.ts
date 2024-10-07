@@ -13,10 +13,9 @@ if (typeof window === "undefined") {
 }
 
 const getFilePath = () => {
-  if (!path) {
-    throw new Error("Path module is not loaded")
-  }
-  return path.join(process.cwd(), "src", "data", "blog.json")
+  const dirRelativeToProjectRoot = "src/data"
+  const dir = path.resolve("./", dirRelativeToProjectRoot)
+  return path.join(dir, "blog.json")
 }
 
 export const saveBlogPost = async (blogPost: IBlogPost) => {

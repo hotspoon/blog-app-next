@@ -1,9 +1,13 @@
 import { promises as fs } from "fs"
-import { join } from "path"
+import path from "path"
 import { IBlogPost } from "@/types"
 import { NextRequest, NextResponse } from "next/server"
 
-const getFilePath = () => join(process.cwd(), "src", "data", "blog.json")
+const getFilePath = () => {
+  const dirRelativeToProjectRoot = "src/data"
+  const dir = path.resolve("./", dirRelativeToProjectRoot)
+  return path.join(dir, "blog.json")
+}
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
