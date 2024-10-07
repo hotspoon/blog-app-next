@@ -36,7 +36,13 @@ export async function GET() {
     const data = await fs.readFile(filePath, "utf-8")
     const blogPosts = JSON.parse(data)
 
-    // Respond with the blog posts
+    // Sort the blog posts by date in descending order
+    blogPosts.sort(
+      (a: { date: string }, b: { date: string }) =>
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+
+    // Respond with the sorted blog posts
     return Response.json(blogPosts, { status: 200 })
   } catch (error) {
     console.error("Error retrieving blog posts:", error)

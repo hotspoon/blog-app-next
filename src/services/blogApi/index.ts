@@ -37,12 +37,18 @@ export const saveBlogPost = async (blogPost: IBlogPost) => {
 
 export const getBlogPosts = async (): Promise<IBlogPost[]> => {
   try {
-    if (!fs) {
-      throw new Error("FS module is not loaded")
-    }
+    // if (!fs) {
+    //   throw new Error("FS module is not loaded")
+    // }
 
     const data = await fs.readFile(getFilePath(), "utf-8")
     const blogPosts = JSON.parse(data)
+
+    // Sort the blog posts by date in descending order
+    blogPosts.posts.sort(
+      (a: IBlogPost, b: IBlogPost) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+
     return blogPosts.posts
   } catch (error) {
     console.error("Error getting blog posts from server:", error)

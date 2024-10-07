@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { IBlogPost } from "@/types"
-import { saveBlogPost } from "@/utils/blogApi"
+import { saveBlogPost } from "@/services/blogApi"
 import useLocalStorage from "@/hooks/useLocalStorage"
 import { blogPostSchema } from "@/schema"
 import StepMetadata from "./step-metadata"
@@ -12,6 +12,7 @@ import StepContent from "./step-content"
 import StepReview from "./step-review"
 import { validateStep } from "./utils"
 import { Button } from "../ui/button"
+import { StepIndicator } from "./step-indicator"
 
 const STEPS = ["Metadata", "Summary & Category", "Content", "Review"]
 const INITIAL_FORM_DATA = {
@@ -81,12 +82,14 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialStep }) => {
       setErrors(newErrors)
       const errorMessages = result.error.errors.map((error) => error.message).join("\n")
       alert(`Please fill in the required fields:\n${errorMessages}`)
+      setIsSubmitting(false)
       return
     }
 
     // Confirmation before submitting
     const isConfirmed = window.confirm("Are you sure you want to submit this blog post?")
     if (!isConfirmed) {
+      setIsSubmitting(false)
       return
     }
 
@@ -130,7 +133,8 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialStep }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <StepIndicator steps={STEPS} currentStep={step} />
       <h2 className="text-2xl font-bold">{STEPS[step]}</h2>
       {renderStep()}
       <div className={`flex ${step === 0 ? "justify-end" : "justify-between"}`}>
@@ -145,7 +149,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialStep }) => {
           </Button>
         ) : (
           <Button type="submit" disabled={isSubmitting}>
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </Button>
         )}
       </div>

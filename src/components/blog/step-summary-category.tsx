@@ -2,6 +2,15 @@
 import React from "react"
 import { Label } from "../ui/label"
 import { Textarea } from "../ui/textarea"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem
+} from "@/components/ui/select"
 
 const StepSummaryCategory: React.FC<{
   formData: any
@@ -10,7 +19,7 @@ const StepSummaryCategory: React.FC<{
 }> = ({ formData, errors, handleChange }) => (
   <>
     <div>
-      <Label htmlFor="" className="block text-sm font-medium text-gray-700">
+      <Label htmlFor="summary" className="block text-sm font-medium text-gray-700">
         Blog Summary
       </Label>
       <Textarea
@@ -28,19 +37,29 @@ const StepSummaryCategory: React.FC<{
       <Label htmlFor="" className="block text-sm font-medium text-gray-700">
         Blog Category
       </Label>
-      <select
+      <Select
         name="category"
         value={formData.category}
-        onChange={handleChange}
+        onValueChange={(value) =>
+          handleChange({
+            target: { name: "category", value }
+          } as React.ChangeEvent<HTMLSelectElement>)
+        }
         required
-        className="w-full p-2 border rounded"
         aria-label="Blog Category"
       >
-        <option value="">Select Category</option>
-        <option value="Tech">Tech</option>
-        <option value="Lifestyle">Lifestyle</option>
-        <option value="Business">Business</option>
-      </select>
+        <SelectTrigger className="w-full p-2 border rounded">
+          <SelectValue>{formData.category || "Select a category"}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Categories</SelectLabel>
+            <SelectItem value="Tech">Tech</SelectItem>
+            <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+            <SelectItem value="Business">Business</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
       {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
     </div>
   </>
