@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { z } from "zod"
 import { IBlogPost } from "@/types"
 import { saveBlogPost } from "@/utils/blogApi"
 import useLocalStorage from "@/hooks/useLocalStorage"
@@ -12,6 +11,7 @@ import StepSummaryCategory from "./step-summary-category"
 import StepContent from "./step-content"
 import StepReview from "./step-review"
 import { validateStep } from "./utils"
+import { Button } from "../ui/button"
 
 const STEPS = ["Metadata", "Summary & Category", "Content", "Review"]
 const INITIAL_FORM_DATA = {
@@ -22,14 +22,19 @@ const INITIAL_FORM_DATA = {
   content: ""
 }
 
-export const BlogForm: React.FC = () => {
+interface BlogFormProps {
+  initialStep: number
+}
+
+export const BlogForm: React.FC<BlogFormProps> = ({ initialStep }) => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(initialStep)
   const [formData, setFormData] = useLocalStorage("blogFormData", INITIAL_FORM_DATA)
   const [errors, setErrors] = useState<Partial<Record<keyof IBlogPost, string>>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Load step from query parameters
+  // Update step based on query parameters
   useEffect(() => {
     const stepFromQuery = searchParams.get("step")
     if (stepFromQuery) {
@@ -50,40 +55,6 @@ export const BlogForm: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  // const validateStep = () => {
-  //   let currentStepSchema
-
-  //   switch (step) {
-  //     case 0:
-  //       currentStepSchema = blogPostSchema.pick({ title: true, author: true })
-  //       break
-  //     case 1:
-  //       currentStepSchema = blogPostSchema.pick({ summary: true, category: true })
-  //       break
-  //     case 2:
-  //       currentStepSchema = blogPostSchema.pick({ content: true })
-  //       break
-  //     default:
-  //       currentStepSchema = z.object({})
-  //   }
-
-  //   const result = currentStepSchema.safeParse(formData)
-  //   if (result.success) {
-  //     setErrors({})
-  //     return true
-  //   }
-
-  //   const newErrors: Partial<Record<keyof IBlogPost, string>> = {}
-  //   result.error.errors.forEach((error) => {
-  //     if (error.path.length > 0) {
-  //       const field = error.path[0] as keyof IBlogPost
-  //       newErrors[field] = error.message
-  //     }
-  //   })
-  //   setErrors(newErrors)
-  //   return false
-  // }
-
   const handleNext = (e: React.MouseEvent) => {
     e.preventDefault()
     if (validateStep(step, formData, setErrors) && step < STEPS.length - 1) setStep(step + 1)
@@ -96,7 +67,7 @@ export const BlogForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
+    setIsSubmitting(true)
     // Final validation before submitting
     const result = blogPostSchema.safeParse(formData)
     if (!result.success) {
@@ -126,7 +97,6 @@ export const BlogForm: React.FC = () => {
     } as IBlogPost
 
     try {
-      // console.log(newPost)
       await saveBlogPost(newPost)
 
       // Clear localStorage after successful submission
@@ -137,6 +107,8 @@ export const BlogForm: React.FC = () => {
     } catch (error) {
       console.error("Failed to save blog post:", error)
       alert("An error occurred while saving the blog post. Please try again.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -161,28 +133,20 @@ export const BlogForm: React.FC = () => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <h2 className="text-2xl font-bold">{STEPS[step]}</h2>
       {renderStep()}
-      <div className="flex justify-between">
+      <div className={`flex ${step === 0 ? "justify-end" : "justify-between"}`}>
         {step > 0 && (
-          <button
-            type="button"
-            onClick={handleBack}
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
-          >
+          <Button type="button" variant="outline" onClick={handleBack}>
             Back
-          </button>
+          </Button>
         )}
         {step < STEPS.length - 1 ? (
-          <button
-            type="button"
-            onClick={handleNext}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded"
-          >
+          <Button type="button" onClick={handleNext}>
             Next
-          </button>
+          </Button>
         ) : (
-          <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">
+          <Button type="submit" disabled={isSubmitting}>
             Submit
-          </button>
+          </Button>
         )}
       </div>
     </form>

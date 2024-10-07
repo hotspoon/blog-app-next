@@ -1,9 +1,6 @@
 import { BlogList } from "@/components/blog/blog-list"
 import { getBlogPosts } from "@/utils/blogApi"
-
-type SearchParams = {
-  [key: string]: string | string[] | undefined
-}
+import { SearchParams } from "@/types"
 
 export default async function Home({ searchParams }: { searchParams: SearchParams }) {
   const posts = await getBlogPosts()

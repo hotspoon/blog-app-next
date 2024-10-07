@@ -1,5 +1,7 @@
 "use client"
 import React from "react"
+import { Label } from "../ui/label"
+import { Textarea } from "../ui/textarea"
 
 const StepSummaryCategory: React.FC<{
   formData: any
@@ -8,10 +10,10 @@ const StepSummaryCategory: React.FC<{
 }> = ({ formData, errors, handleChange }) => (
   <>
     <div>
-      <label htmlFor="" className="block text-sm font-medium text-gray-700">
+      <Label htmlFor="" className="block text-sm font-medium text-gray-700">
         Blog Summary
-      </label>
-      <textarea
+      </Label>
+      <Textarea
         name="summary"
         value={formData.summary}
         onChange={handleChange}
@@ -23,9 +25,9 @@ const StepSummaryCategory: React.FC<{
       {errors.summary && <p className="text-red-500 text-sm">{errors.summary}</p>}
     </div>
     <div className="mt-2">
-      <label htmlFor="" className="block text-sm font-medium text-gray-700">
+      <Label htmlFor="" className="block text-sm font-medium text-gray-700">
         Blog Category
-      </label>
+      </Label>
       <select
         name="category"
         value={formData.category}

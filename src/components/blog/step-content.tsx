@@ -1,5 +1,7 @@
 "use client"
 import React from "react"
+import { Label } from "../ui/label"
+import { Textarea } from "../ui/textarea"
 
 const StepContent: React.FC<{
   formData: any
@@ -7,10 +9,10 @@ const StepContent: React.FC<{
   handleChange: any
 }> = ({ formData, errors, handleChange }) => (
   <div>
-    <label htmlFor="content" className="block text-sm font-medium text-gray-700">
+    <Label htmlFor="content" className="block text-sm font-medium text-gray-700">
       Blog Content
-    </label>
-    <textarea
+    </Label>
+    <Textarea
       id="content"
       name="content"
       value={formData.content}

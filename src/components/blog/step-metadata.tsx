@@ -1,5 +1,7 @@
 "use client"
 import React from "react"
+import { Label } from "../ui/label"
+import { Input } from "../ui/input"
 
 const StepMetadata: React.FC<{
   formData: any
@@ -8,10 +10,10 @@ const StepMetadata: React.FC<{
 }> = ({ formData, errors, handleChange }) => (
   <>
     <div>
-      <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+      <Label htmlFor="title" className="block text-sm font-medium text-gray-700">
         Blog Title
-      </label>
-      <input
+      </Label>
+      <Input
         id="title"
         type="text"
         name="title"
@@ -25,10 +27,10 @@ const StepMetadata: React.FC<{
       {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
     </div>
     <div className="mt-2">
-      <label htmlFor="author" className="block text-sm font-medium text-gray-700">
+      <Label htmlFor="author" className="block text-sm font-medium text-gray-700">
         Author Name
-      </label>
-      <input
+      </Label>
+      <Input
         id="author"
         type="text"
         name="author"
