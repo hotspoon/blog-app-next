@@ -1,24 +1,36 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { IBlogPost } from "@/types"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface BlogListProps {
   posts: IBlogPost[]
+  initialPage: number
 }
 
-export const BlogList: React.FC<BlogListProps> = ({ posts }) => {
-  const [currentPage, setCurrentPage] = useState(1)
+export const BlogList: React.FC<BlogListProps> = ({ posts, initialPage }) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [currentPage, setCurrentPage] = useState(initialPage)
   const postsPerPage = 10
+  const totalPages = Math.ceil(posts.length / postsPerPage)
+
+  useEffect(() => {
+    const page = Number(searchParams.get("page")) || 1
+    setCurrentPage(page)
+  }, [searchParams])
+
   const indexOfLastPost = currentPage * postsPerPage
   const indexOfFirstPost = indexOfLastPost - postsPerPage
   const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost)
-  const totalPages = Math.ceil(posts.length / postsPerPage)
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+  const paginate = (pageNumber: number) => {
+    router.push(`?page=${pageNumber}`)
+  }
 
   return (
     <div className="space-y-6">
