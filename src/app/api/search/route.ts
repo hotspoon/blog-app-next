@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server"
 const getFilePath = () => {
   const dirRelativeToProjectRoot = "src/data"
   const dir = path.resolve("./", dirRelativeToProjectRoot)
-  return path.join(dir, "blog.json")
+  return path.resolve(dir, "blog.json")
 }
 
 export async function GET(req: NextRequest) {

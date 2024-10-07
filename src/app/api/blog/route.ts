@@ -3,7 +3,7 @@ import path from "path"
 
 const dirRelativeToProjectRoot = "src/data"
 const dir = path.resolve("./", dirRelativeToProjectRoot)
-const filePath = path.join(dir, "blog.json")
+const filePath = path.resolve(dir, "blog.json")
 
 export async function POST(request: Request) {
   try {
