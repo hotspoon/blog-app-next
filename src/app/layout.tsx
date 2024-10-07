@@ -1,5 +1,6 @@
 import Link from "next/link"
 import "./globals.css"
+import { Toaster } from "react-hot-toast"
 
 export const metadata = {
   title: "Multi-Step Blog Creation Wizard",
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </header>
           <main>{children}</main>
         </div>
+        <Toaster />
       </body>
     </html>
   )

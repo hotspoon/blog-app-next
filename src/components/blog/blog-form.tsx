@@ -13,6 +13,7 @@ import StepReview from "./step-review"
 import { validateStep } from "./utils"
 import { Button } from "../ui/button"
 import { StepIndicator } from "./step-indicator"
+import { toast } from "react-hot-toast"
 
 const STEPS = ["Metadata", "Summary & Category", "Content", "Review"]
 const INITIAL_FORM_DATA = {
@@ -105,13 +106,19 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialStep }) => {
       // Clear localStorage after successful submission
       localStorage.removeItem("blogFormData")
 
-      // Navigate to the home page
-      window.location.href = "/"
+      // Show success toast and delay navigation
+      toast.success("Blog post submitted successfully!", {
+        duration: 2000 // Show the toast for 5 seconds
+      })
+
+      // Delay navigation to the home page
+      setTimeout(() => {
+        window.location.href = "/"
+      }, 2000)
     } catch (error) {
+      setIsSubmitting(false)
       console.error("Failed to save blog post:", error)
       alert("An error occurred while saving the blog post. Please try again.")
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
