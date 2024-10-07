@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "json-server": "npx json-server --watch src/data/blog.json --port 5000",
-    "dev:server": "concurrently \"npm run dev\" \"npm run json-server\""
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -21,8 +19,6 @@
     "@radix-ui/react-tabs": "^1.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "concurrently": "^9.0.1",
-    "json-server": "^1.0.0-beta.3",
     "lucide-react": "^0.447.0",
     "next": "14.2.14",
     "react": "^18",
