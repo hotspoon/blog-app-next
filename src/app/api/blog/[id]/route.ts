@@ -1,17 +1,9 @@
-import { IBlogPost } from "@/types"
 import { promises as fs } from "fs"
-import { NextRequest } from "next/server"
 import path from "path"
 
 const filePath = path.join(process.cwd(), "src", "data", "blog.json")
 
-interface IGETRequest {
-  params: {
-    id: string
-  }
-}
-
-export async function GET({ params }: IGETRequest) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const { id } = params
 
