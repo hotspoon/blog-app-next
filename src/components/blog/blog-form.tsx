@@ -108,7 +108,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialStep }) => {
 
       // Show success toast and delay navigation
       toast.success("Blog post submitted successfully!", {
-        duration: 2000 // Show the toast for 5 seconds
+        duration: 2000
       })
 
       // Delay navigation to the home page
