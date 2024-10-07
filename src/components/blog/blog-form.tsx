@@ -1,130 +1,161 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { IBlogPost } from "@/types";
-import { saveBlogPost } from "@/utils/blogApi";
+import React, { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { z } from "zod"
+import { IBlogPost } from "@/types"
+import { saveBlogPost } from "@/utils/blogApi"
+import useLocalStorage from "@/hooks/useLocalStorage"
+import { blogPostSchema } from "@/schema"
+import StepMetadata from "./step-metadata"
+import StepSummaryCategory from "./step-summary-category"
+import StepContent from "./step-content"
+import StepReview from "./step-review"
+import { validateStep } from "./utils"
 
-const STEPS = ["Metadata", "Summary & Category", "Content", "Review"];
+const STEPS = ["Metadata", "Summary & Category", "Content", "Review"]
+const INITIAL_FORM_DATA = {
+  title: "",
+  author: "",
+  summary: "",
+  category: "",
+  content: ""
+}
 
 export const BlogForm: React.FC = () => {
-  const router = useRouter();
-  const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState<Partial<IBlogPost>>({
-    title: "",
-    author: "",
-    summary: "",
-    category: "",
-    content: "",
-  });
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [step, setStep] = useState(0)
+  const [formData, setFormData] = useLocalStorage("blogFormData", INITIAL_FORM_DATA)
+  const [errors, setErrors] = useState<Partial<Record<keyof IBlogPost, string>>>({})
+
+  // Load step from query parameters
+  useEffect(() => {
+    const stepFromQuery = searchParams.get("step")
+    if (stepFromQuery) {
+      setStep(parseInt(stepFromQuery, 10))
+    }
+  }, [searchParams])
+
+  // Update query parameters on state change
+  useEffect(() => {
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set("step", step.toString())
+    router.replace(`?${newParams.toString()}`, { scroll: false })
+  }, [step, router, searchParams])
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
 
-  const handleNext = () => {
-    if (step < STEPS.length - 1) setStep(step + 1);
-  };
+  // const validateStep = () => {
+  //   let currentStepSchema
 
-  const handleBack = () => {
-    if (step > 0) setStep(step - 1);
-  };
+  //   switch (step) {
+  //     case 0:
+  //       currentStepSchema = blogPostSchema.pick({ title: true, author: true })
+  //       break
+  //     case 1:
+  //       currentStepSchema = blogPostSchema.pick({ summary: true, category: true })
+  //       break
+  //     case 2:
+  //       currentStepSchema = blogPostSchema.pick({ content: true })
+  //       break
+  //     default:
+  //       currentStepSchema = z.object({})
+  //   }
+
+  //   const result = currentStepSchema.safeParse(formData)
+  //   if (result.success) {
+  //     setErrors({})
+  //     return true
+  //   }
+
+  //   const newErrors: Partial<Record<keyof IBlogPost, string>> = {}
+  //   result.error.errors.forEach((error) => {
+  //     if (error.path.length > 0) {
+  //       const field = error.path[0] as keyof IBlogPost
+  //       newErrors[field] = error.message
+  //     }
+  //   })
+  //   setErrors(newErrors)
+  //   return false
+  // }
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (validateStep(step, formData, setErrors) && step < STEPS.length - 1) setStep(step + 1)
+  }
+
+  const handleBack = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (step > 0) setStep(step - 1)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
+
+    // Final validation before submitting
+    const result = blogPostSchema.safeParse(formData)
+    if (!result.success) {
+      const newErrors: Partial<Record<keyof IBlogPost, string>> = {}
+      result.error.errors.forEach((error) => {
+        if (error.path.length > 0) {
+          const field = error.path[0] as keyof IBlogPost
+          newErrors[field] = error.message
+        }
+      })
+      setErrors(newErrors)
+      const errorMessages = result.error.errors.map((error) => error.message).join("\n")
+      alert(`Please fill in the required fields:\n${errorMessages}`)
+      return
+    }
+
+    // Confirmation before submitting
+    const isConfirmed = window.confirm("Are you sure you want to submit this blog post?")
+    if (!isConfirmed) {
+      return
+    }
+
     const newPost: IBlogPost = {
       ...formData,
       id: Date.now().toString(),
-      date: new Date().toISOString(),
-    } as IBlogPost;
-    await saveBlogPost(newPost);
-    router.push("/");
-  };
+      date: new Date().toISOString()
+    } as IBlogPost
+
+    try {
+      // console.log(newPost)
+      await saveBlogPost(newPost)
+
+      // Clear localStorage after successful submission
+      localStorage.removeItem("blogFormData")
+
+      // // Navigate to the home page
+      router.push("/")
+    } catch (error) {
+      console.error("Failed to save blog post:", error)
+      alert("An error occurred while saving the blog post. Please try again.")
+    }
+  }
 
   const renderStep = () => {
     switch (step) {
       case 0:
-        return (
-          <>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Blog Title"
-              required
-              className="w-full p-2 border rounded"
-              aria-label="Blog Title"
-            />
-            <input
-              type="text"
-              name="author"
-              value={formData.author}
-              onChange={handleChange}
-              placeholder="Author Name"
-              required
-              className="w-full p-2 border rounded mt-2"
-              aria-label="Author Name"
-            />
-          </>
-        );
+        return <StepMetadata formData={formData} errors={errors} handleChange={handleChange} />
       case 1:
         return (
-          <>
-            <textarea
-              name="summary"
-              value={formData.summary}
-              onChange={handleChange}
-              placeholder="Blog Summary"
-              required
-              className="w-full p-2 border rounded"
-              aria-label="Blog Summary"
-            />
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded mt-2"
-              aria-label="Blog Category"
-            >
-              <option value="">Select Category</option>
-              <option value="Tech">Tech</option>
-              <option value="Lifestyle">Lifestyle</option>
-              <option value="Business">Business</option>
-            </select>
-          </>
-        );
+          <StepSummaryCategory formData={formData} errors={errors} handleChange={handleChange} />
+        )
       case 2:
-        return (
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            placeholder="Blog Content"
-            required
-            className="w-full p-2 border rounded h-64"
-            aria-label="Blog Content"
-          />
-        );
+        return <StepContent formData={formData} errors={errors} handleChange={handleChange} />
       case 3:
-        return (
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold">{formData.title}</h2>
-            <p>Author: {formData.author}</p>
-            <p>Category: {formData.category}</p>
-            <p>Summary: {formData.summary}</p>
-            <p>Content: {formData.content}</p>
-          </div>
-        );
+        return <StepReview formData={formData} />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -149,14 +180,11 @@ export const BlogForm: React.FC = () => {
             Next
           </button>
         ) : (
-          <button
-            type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded"
-          >
+          <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">
             Submit
           </button>
         )}
       </div>
     </form>
-  );
-};
+  )
+}

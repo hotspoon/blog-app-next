@@ -1,29 +1,28 @@
 import { IBlogPost } from "@/types"
-import blogData from "@/data/blog.json"
 
-const STORAGE_KEY = "blog_posts"
+let fs: typeof import("fs").promises
+let path: typeof import("path")
 
-// export const saveBlogPost = async (post: IBlogPost): Promise<void> => {
-//   const posts = await getBlogPosts();
-//   posts.push(post);
-//   localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-// };
-
-// export const getBlogPosts = async (): Promise<IBlogPost[]> => {
-//   if (typeof window === "undefined") {
-//     return [];
-//   }
-//   const posts = localStorage.getItem(STORAGE_KEY);
-//   return posts ? JSON.parse(posts) : [];
-// };
-
-export const getBlogPost = async (id: string): Promise<IBlogPost | undefined> => {
-  const posts = await getBlogPosts()
-  return posts.find((post) => post.id === id)
+if (typeof window === "undefined") {
+  // We are on the server
+  import("fs").then((fsModule) => {
+    fs = fsModule.promises
+  })
+  import("path").then((pathModule) => {
+    path = pathModule
+  })
 }
+
+const getFilePath = () => {
+  if (!path) {
+    throw new Error("Path module is not loaded")
+  }
+  return path.join(process.cwd(), "src", "data", "blog.json")
+}
+
 export const saveBlogPost = async (blogPost: IBlogPost) => {
   try {
-    const response = await fetch("http://localhost:5000/posts", {
+    const response = await fetch("/api/blog", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -38,30 +37,31 @@ export const saveBlogPost = async (blogPost: IBlogPost) => {
 
 export const getBlogPosts = async (): Promise<IBlogPost[]> => {
   try {
-    // Simulate an async operation
-    // return new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     resolve(blogData.posts)
-    //   }, 1000)
-    // })
-    const response = await fetch("http://localhost:5000/posts")
-    return response.json()
+    if (!fs) {
+      throw new Error("FS module is not loaded")
+    }
+
+    const data = await fs.readFile(getFilePath(), "utf-8")
+    const blogPosts = JSON.parse(data)
+    return blogPosts.posts
   } catch (error) {
-    console.error("Error getting blog posts:", error)
+    console.error("Error getting blog posts from server:", error)
     return []
   }
 }
 
-// export const getBlogPost = async (
-//   id: string,
-// ): Promise<IBlogPost | undefined> => {
-//   try {
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         resolve(blogData.find((post) => post.id === id));
-//       }, 1000);
-//     });
-//   } catch (error) {
-//     console.error("Error getting blog post:", error);
-//   }
-// };
+export const getBlogPost = async (id: string): Promise<IBlogPost | undefined> => {
+  try {
+    if (!fs) {
+      throw new Error("FS module is not loaded")
+    }
+
+    const data = await fs.readFile(getFilePath(), "utf-8")
+    const blogPosts = JSON.parse(data)
+    const post = blogPosts.posts.find((post: IBlogPost) => post.id === id)
+    return post
+  } catch (error) {
+    console.error("Error getting blog post from server:", error)
+    return undefined
+  }
+}
