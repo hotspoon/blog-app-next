@@ -1,17 +1,13 @@
 // app/layout.tsx
-import Link from "next/link";
-import "./globals.css";
+import Link from "next/link"
+import "./globals.css"
 
 export const metadata = {
   title: "Multi-Step Blog Creation Wizard",
-  description: "Create and manage blog posts with a multi-step wizard",
-};
+  description: "Create and manage blog posts with a multi-step wizard"
+}
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
@@ -21,7 +17,7 @@ export default function RootLayout({
               My Blog
             </Link>
             <Link
-              href="/create"
+              href="/post/create"
               className="px-4 py-2 bg-primary text-primary-foreground rounded"
             >
               Create Post
@@ -31,5 +27,5 @@ export default function RootLayout({
         </div>
       </body>
     </html>
-  );
+  )
 }

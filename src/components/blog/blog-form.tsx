@@ -132,8 +132,8 @@ export const BlogForm: React.FC = () => {
       // Clear localStorage after successful submission
       localStorage.removeItem("blogFormData")
 
-      // // Navigate to the home page
-      router.push("/")
+      // Navigate to the home page
+      window.location.href = "/"
     } catch (error) {
       console.error("Failed to save blog post:", error)
       alert("An error occurred while saving the blog post. Please try again.")
