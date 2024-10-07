@@ -14,8 +14,8 @@ if (typeof window === "undefined") {
 
 const getFilePath = () => {
   const dirRelativeToProjectRoot = "src/data"
-  const dir = path.resolve("./", dirRelativeToProjectRoot)
-  return path.resolve(dir, "blog.json")
+  // Start resolving from the project root
+  return path.resolve(process.cwd(), dirRelativeToProjectRoot, "blog.json")
 }
 
 export const saveBlogPost = async (blogPost: IBlogPost) => {
